@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K-san 💗</title>
+<title>K-san</title>
 <style>
   html, body {
     margin: 0;
@@ -86,20 +86,6 @@
   .no:hover {
     background-color: #ffc0cb;
     transform: scale(1.05);
-  }
-
-  /* 👀 No button runs away on PC for last question */
-  @media (hover: hover) {
-    .card.last .no:hover {
-      position: absolute;
-      left: calc(20px + (Math.random() * 120px));
-      top: calc(20px + (Math.random() * 80px));
-      transform: translate(
-        calc((Math.random() - 0.5) * 100px),
-        calc((Math.random() - 0.5) * 50px)
-      );
-      transition: all 0.3s ease;
-    }
   }
 
   .message {
@@ -190,16 +176,14 @@ function handleAnswer(choice, index, card) {
   answers[index] = choice;
 
   if (index === questions.length - 1) {
+    const noBtn = card.querySelector(".no");
     if (choice === "No") {
-      // On mobile, make No jump away randomly
-      const noBtn = card.querySelector(".no");
-      if (window.matchMedia("(hover: none)").matches) {
-        noBtn.style.position = "absolute";
-        noBtn.style.transition = "all 0.4s ease";
-        const randX = Math.random() * 160 - 80;
-        const randY = Math.random() * 80 - 40;
-        noBtn.style.transform = `translate(${randX}px, ${randY}px) rotate(${Math.random()*30 - 15}deg)`;
-      }
+      // No button runs away randomly every time
+      noBtn.style.position = "absolute";
+      noBtn.style.transition = "all 0.4s ease";
+      const randX = Math.random() * 200 - 100;
+      const randY = Math.random() * 100 - 50;
+      noBtn.style.transform = `translate(${randX}px, ${randY}px) rotate(${Math.random()*20 - 10}deg)`;
       return;
     } else {
       showFinalMessage();
@@ -223,7 +207,7 @@ function typeMessage(text, container) {
       clearInterval(interval);
       typing.classList.remove("typing");
     }
-  }, 35);
+  }, 65); // slower typing speed
 }
 
 function showFinalMessage() {
@@ -231,13 +215,13 @@ function showFinalMessage() {
   let message = "";
 
   if (a1 === "Yes" && a2 === "No" && a3 === "No") {
-    message = `K-san already told you — you did good enough.\nDon’t have second thoughts, it’s not your fault.\nThings will get better, just put in a little trust :3\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
+    message = `K-san already told you — you did good enough.\nDon’t have second thoughts, it’s not your fault.\nThings will get better, just put in a little trust :3\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe`;
   } else if (a1 === "No" && a2 === "No" && a3 === "Yes") {
-    message = `Oii!! even if you don’t feel okay yet,\nit’ll get better soon :3 you did what you could, don’t feel guilty.\nHopefully things will get easier 💗\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
+    message = `Oii!! even if you don’t feel okay yet,\nit’ll get better soon :3 you did what you could, don’t feel guilty.\nHopefully things will get easier\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe`;
   } else if (a1 === "Yes" && a2 === "Yes" && a3 === "Yes") {
-    message = `That’s how I want Rae-san to be :3\nYesss, put in that trust and keep moving forward!\nKeep it light, keep it soft 💕\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
+    message = `That’s how I want Rae-san to be :3\nYesss, put in that trust and keep moving forward!\nKeep it light, keep it soft\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe`;
   } else {
-    message = `You will be okay... things will be okay.\nDon’t lose hope, things are just the way they’re meant to be.\nBe gentle with yourself, K-san 🌷\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
+    message = `You will be okay... things will be okay.\nDon’t lose hope, things are just the way they’re meant to be.\nBe gentle with yourself, K-san\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe`;
   }
 
   stack.innerHTML = `<div class="card message" id="finalMsg"></div>`;
