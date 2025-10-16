@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hey, K-san 💗</title>
+<title>K-san 💗</title>
 <style>
   html, body {
     margin: 0;
@@ -31,7 +31,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: visible;
   }
 
   .card {
@@ -81,11 +80,26 @@
   .no {
     background-color: #ffd6e0;
     color: #555;
+    position: relative;
   }
 
   .no:hover {
     background-color: #ffc0cb;
     transform: scale(1.05);
+  }
+
+  /* 👀 No button runs away on PC for last question */
+  @media (hover: hover) {
+    .card.last .no:hover {
+      position: absolute;
+      left: calc(20px + (Math.random() * 120px));
+      top: calc(20px + (Math.random() * 80px));
+      transform: translate(
+        calc((Math.random() - 0.5) * 100px),
+        calc((Math.random() - 0.5) * 50px)
+      );
+      transition: all 0.3s ease;
+    }
   }
 
   .message {
@@ -97,30 +111,30 @@
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(10px);
     box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4);
-    animation: fadeIn 0.8s ease forwards;
     line-height: 1.5;
+    white-space: pre-line;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  .typing {
+    border-right: 2px solid #ffb6c1;
+    animation: blink 0.8s infinite;
   }
 
-  /* 📱 Responsive tweaks */
+  @keyframes blink {
+    50% { border-color: transparent; }
+  }
+
   @media (max-width: 480px) {
     h2 {
       font-size: 1rem;
     }
-
     button {
       font-size: 0.9rem;
       padding: 8px 20px;
     }
-
     .stack {
       width: 100%;
     }
-
     .card {
       padding: 20px;
       border-radius: 18px;
@@ -154,7 +168,8 @@ const stack = document.getElementById("stack");
 function createCard(index) {
   const newCard = document.createElement("div");
   newCard.classList.add("card");
-  newCard.style.transform = `translate(${index * 10}px, ${index * 10}px)`; // visible stack
+  if (index === questions.length - 1) newCard.classList.add("last");
+  newCard.style.transform = `translate(${index * 10}px, ${index * 10}px)`;
   newCard.innerHTML = `
     <h2>${questions[index]}</h2>
     <div>
@@ -176,13 +191,15 @@ function handleAnswer(choice, index, card) {
 
   if (index === questions.length - 1) {
     if (choice === "No") {
-      // playful "No" teleport
+      // On mobile, make No jump away randomly
       const noBtn = card.querySelector(".no");
-      noBtn.style.position = "absolute";
-      noBtn.style.transition = "all 0.4s ease";
-      const randX = Math.random() * 160 - 80;
-      const randY = Math.random() * 80 - 40;
-      noBtn.style.transform = `translate(${randX}px, ${randY}px) rotate(${Math.random()*30 - 15}deg)`;
+      if (window.matchMedia("(hover: none)").matches) {
+        noBtn.style.position = "absolute";
+        noBtn.style.transition = "all 0.4s ease";
+        const randX = Math.random() * 160 - 80;
+        const randY = Math.random() * 80 - 40;
+        noBtn.style.transform = `translate(${randX}px, ${randY}px) rotate(${Math.random()*30 - 15}deg)`;
+      }
       return;
     } else {
       showFinalMessage();
@@ -193,41 +210,39 @@ function handleAnswer(choice, index, card) {
   }
 }
 
+function typeMessage(text, container) {
+  let i = 0;
+  const typing = document.createElement("span");
+  typing.classList.add("typing");
+  container.appendChild(typing);
+
+  const interval = setInterval(() => {
+    typing.textContent = text.slice(0, i);
+    i++;
+    if (i > text.length) {
+      clearInterval(interval);
+      typing.classList.remove("typing");
+    }
+  }, 35);
+}
+
 function showFinalMessage() {
   const [a1, a2, a3, a4] = answers;
   let message = "";
 
   if (a1 === "Yes" && a2 === "No" && a3 === "No") {
-    message = `
-      K-san already told you — you did good enough.<br>
-      Don’t have second thoughts, it’s not your fault.<br>
-      Things <i>will</i> get better, just put in a little trust :3<br><br>
-      btw im not allowing you to press no for that question no uh, its okiii hehe :3
-    `;
+    message = `K-san already told you — you did good enough.\nDon’t have second thoughts, it’s not your fault.\nThings will get better, just put in a little trust :3\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
   } else if (a1 === "No" && a2 === "No" && a3 === "Yes") {
-    message = `
-      Oii!! even if you don’t feel okay yet,<br>
-      it’ll get better soon :3 you did what you could, don’t feel guilty.<br>
-      Hopefully things will get easier..<br><br>
-      btw im not allowing you to press no for that question no uh, its okiii hehe :3
-    `;
+    message = `Oii!! even if you don’t feel okay yet,\nit’ll get better soon :3 you did what you could, don’t feel guilty.\nHopefully things will get easier 💗\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
   } else if (a1 === "Yes" && a2 === "Yes" && a3 === "Yes") {
-    message = `
-      That’s how I want Rae-san to be :3<br>
-      Yesss, put in that trust and keep moving forward!<br>
-      Keep it light, keep it soft!!<br><br>
-      btw im not allowing you to press no for that question no uh, its okiii hehe :3
-    `;
+    message = `That’s how I want Rae-san to be :3\nYesss, put in that trust and keep moving forward!\nKeep it light, keep it soft 💕\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
   } else {
-    message = `
-      You will be okay... things will be okay.<br>
-      Don’t lose hope, things are just the way they’re meant to be.<br>
-      Be gentle with yourself, K-sannn<br><br>
-      btw im not allowing you to press no for that question no uh, its okiii hehe :3
-    `;
+    message = `You will be okay... things will be okay.\nDon’t lose hope, things are just the way they’re meant to be.\nBe gentle with yourself, K-san 🌷\n\nbtw im not allowing you to press no for that question no uh, its okiii hehe 💞`;
   }
 
-  stack.innerHTML = `<div class="card message">${message}</div>`;
+  stack.innerHTML = `<div class="card message" id="finalMsg"></div>`;
+  const msgDiv = document.getElementById("finalMsg");
+  typeMessage(message, msgDiv);
   document.body.style.background = "linear-gradient(135deg, #ffd6e0, #f9d1ff)";
 }
 
